@@ -1,4 +1,7 @@
 ﻿using System;
+
+using System.Collections;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +9,18 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1_Home_Work_Student_with_Group_
 {
-    class Group
+
+    
+
+    class Group : IEnumerable
+
     {
         private Student[] students;
         private int count_of_student;
         private string name_of_group;
         private string specialization;
         private int course;
+
 
         public Group(int count, string name_of_group, string specialization, int course)
         {
@@ -64,6 +72,25 @@ namespace ConsoleApp1_Home_Work_Student_with_Group_
             set { course = value; }
         }
 
+        public Student this[int index]
+        {
+            get
+            {
+                if (index >= 0 && index < students.Length)
+                {
+                    return students[index];
+                }
+                throw new IndexOutOfRangeException();
+            }
+            set
+            {
+                if (index >= 0 && index < students.Length)
+                {
+                    students[index] = value;
+                }
+            }
+        }
+
         public void ShowGroup()
         {
             Console.WriteLine("======================");
@@ -79,6 +106,22 @@ namespace ConsoleApp1_Home_Work_Student_with_Group_
                 students[i].Show();
             }
         }
+
+        public void Print()
+        {
+            Console.WriteLine("======================");
+            Console.WriteLine("Group name: " + Name_of_group);
+            Console.WriteLine("Specialization: " + Specialization);
+            Console.WriteLine("Count of students: " + Count_of_students);
+            Console.WriteLine("Course: " + Course);
+            Console.WriteLine("List of Students: ");
+            Console.WriteLine();
+            foreach (var item in students)
+            {
+                item.Show();
+            }
+        }
+
         public void AddStudent()
         {
             Array.Resize(ref students, students.Length + 1);
@@ -118,6 +161,110 @@ namespace ConsoleApp1_Home_Work_Student_with_Group_
             }
             count_of_student--;
             students = newStudents;
+        }
+
+
+        public void SortByAverage()
+        {
+            Array.Sort(students);
+        }
+
+        public void SortByLastName()
+        {
+            Array.Sort(students, new SortBySurname());
+        }
+
+        public void SortByDateOfBirth()
+        {
+            Array.Sort(students, new SortByAge());
+        }
+
+        public void SearchByName(string name)
+        {
+            int count = 0;
+            Console.Write("\nСтуденты с именем "+name);
+            for (int i = 0; i < this.students.Length; i++)
+            {
+                if (this.students[i].GetName()==name)
+                {
+                    Console.WriteLine();
+                    this.students[i].Show();
+                    count++;
+                }
+            }
+            if (count == 0) Console.Write(" нет\n");
+        }
+
+        public void SearchBySurname(string surname)
+        {
+            int count = 0;
+            Console.Write("\nСтуденты с Фамилией " + surname);
+            for (int i = 0; i < this.students.Length; i++)
+            {
+                if (this.students[i].GetSurname() == surname)
+                {
+                    Console.WriteLine();
+                    this.students[i].Show();
+                    count++;
+                }
+            }
+            if (count == 0) Console.Write(" нет\n");
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (IEnumerator)GetEnumerator();
+        }
+
+        public GroupEnum GetEnumerator()
+        {
+            return new GroupEnum(students); 
+        }
+    }
+   
+
+    public class GroupEnum : IEnumerator
+    {
+        public Student[] students;
+        int position = -1;
+
+        public GroupEnum(Student[] list)
+        {
+            students = list;
+        }
+        
+        public bool MoveNext()
+        {
+            position++;
+            return (position < students.Length);
+        }
+        
+        public void Reset()
+        {
+            position = -1;
+        }
+
+        object IEnumerator.Current
+        {
+            get
+            {
+                return Current;
+            }
+        }
+
+        public Student Current
+        {
+            get
+            {
+                try
+                {
+                    return students[position];
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new InvalidOperationException();
+                }
+            }
         }
     }
 }

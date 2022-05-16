@@ -1,4 +1,7 @@
 ﻿using System;
+
+using System.Collections;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +9,26 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1_Home_Work_Student_with_Group_
 {
-    public class Student
+
+
+    class SortBySurname: IComparer<Student>
+    {
+        public int Compare(Student first, Student second)
+        {
+            return String.Compare(first.GetSurname(), second.GetSurname());
+        }
+    }
+    class SortByAge : IComparer<Student>
+    { 
+        public int Compare(Student first, Student second)
+        {
+            return DateTime.Compare(first.GetDateOfBirth(), second.GetDateOfBirth());
+        }
+    }
+    
+
+    public class Student : IComparable<Student>
+
     {
         private string surname;
         private string name;
@@ -112,6 +134,7 @@ namespace ConsoleApp1_Home_Work_Student_with_Group_
         }
         public double Average()
         {
+
             return ((double)credits.Average() + (double)course_work.Average() + (double)exams.Average()) /3;
         }
         public void Show()
@@ -128,5 +151,22 @@ namespace ConsoleApp1_Home_Work_Student_with_Group_
             Console.WriteLine("Average: " + Average());
             Console.WriteLine("======================");
         }
+
+        public int CompareTo(Student other)
+        {
+            if (this.Average()>other.Average())
+            {
+                return 1;
+            }
+            else if (this.Average() < other.Average())
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
     }
 }
